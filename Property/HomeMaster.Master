@@ -1,0 +1,576 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="HomeMaster.Master.cs" Inherits="Property.HomeMaster" %>
+
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajaxtoolkit" %>
+<%@ Register TagName="FeaturedProperties" TagPrefix="uc" Src="~/Controls/FeaturedProperties.ascx" %>
+<%@ Register TagName="Logo" TagPrefix="uc" Src="~/Controls/logo.ascx" %>
+<%@ Register TagName="SearchBar" TagPrefix="uc" Src="~/Controls/SearchBar.ascx" %>
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <link id="favicon" runat="server" rel="shortcut icon" type="image/x-icon" />
+     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+    <asp:Literal ID="siteTitle" runat="server"></asp:Literal></title>
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <%--    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>--%>
+    <script type="text/javascript" src="js/jquery.flexisel.js"></script>
+    <script type="text/javascript" src="js/jquery.nivo.slider.js"></script>
+    <%--<script src="js/jquery.bxslider.min.js"></script>--%>
+    <script type="text/javascript" src="js/jquery_009.js"></script>
+    <link href="css/bootstrap.css" rel="stylesheet" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/media-queries.css" rel="stylesheet" />
+    <link href="css/font.css" rel="stylesheet" />
+    <link href="css/font-awesome.css" rel="stylesheet" />
+    <link href="css/styleBackup.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
+    <link href="css/nivo-slider.css" rel="stylesheet" />
+    <link href="css/shortcodes.css" rel="stylesheet" />
+    <link href="css/jquery.bxslider.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Merriweather" rel="stylesheet">
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#ctl00_txtCountry").autocomplete({ minLength: 2 ,
+                source: function (request, responce) {
+                    $.ajax({
+                        url: "WebService1.asmx/GetData",
+                        method: "post",
+                        contentType: "application/json;charset=utf-8",
+                        data: JSON.stringify({ DName: request.term }),
+                        dataType: 'json',
+                        success: function (data) {
+                            debugger;
+                            if (data.d.length == 0) {
+                                var result = [
+                                 {
+                                     label: 'No matches found',
+                                     value: responce.term
+                                 }
+                                ];
+                                responce(result);
+                            }
+                            else {
+                                //responce(data.d);
+                                responce($.map(data.d, function (item) {
+                                    return {
+                                        label: item,
+                                        value: item
+                                    }
+                                }))
+                            }
+                        },
+                        error: function (err) {
+                            debugger;
+                            alert(err);
+                            alert('jhgj');
+                        }
+                    });
+                }
+            });
+
+            $('#ctl00_txtCountry').on('autocompleteselect', function (e, ui) {
+                debugger;
+                var selectedvalue = ui.item.value;
+                if (selectedvalue != "No matches found") {
+                    var string1 = selectedvalue.split(':')[1];
+                    var string2 = string1.split('--')[0];
+                    var origin = window.location.origin;
+
+                    window.location.href = origin + "/PropertyDetails.aspx?MLSID=" + string2 + "&PropertyType=IDXImagesCondo";
+                }
+
+            });
+
+        });
+    </script>
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server">
+    </asp:ContentPlaceHolder>
+    <style type="text/css">
+        .contact_number {
+            float: left;
+            height: 100px;
+            padding: 20px;
+            position: absolute;
+            top: 512px;
+            z-index: 99999;
+        }
+
+            .contact_number span {
+                color: white;
+                font-size: 24px;
+            }
+
+        #Homebanner {
+            float: left;
+            margin-bottom: 0px;
+            width: 100%;
+        }
+
+        #map {
+            border: 2px solid #3f6f55;
+            height: 229px;
+            width: 90%;
+        }
+    </style>
+    <style type="text/css">
+        blockquote {
+            clear: both;
+            font-style: italic;
+            margin-left: 10px;
+            margin-right: 10px;
+            padding: 10px 10px 0 50px;
+            quotes: none;
+            background: url(https://dl.dropbox.com/u/96099766/RotatingTestimonial/open-quote.png) 0 0 no-repeat;
+            border: 0px;
+            font-size: 120%;
+            line-height: 200%;
+        }
+    </style>
+
+</head>
+<body>
+    <form id="Form" runat="server">
+        <%-- <ajaxtoolkit:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server">
+    </ajaxtoolkit:ToolkitScriptManager>--%>
+        <asp:ScriptManager ID="ScriptManager1" runat="server">
+        </asp:ScriptManager>
+       
+        <div class="top_menu_bg">
+            <div class="container">
+                <div class="col-md-9 col-sm-9">
+                    <div class="menu_section">
+                        <asp:Literal ID="dynamicmenus" runat="server"></asp:Literal>
+                    </div>
+                    <script type="text/javascript" src="../js/script.js"></script>
+                </div>
+                 <div class="col-md-3 col-sm-3">
+                     <div class="right_sect_contct">
+                         <h2>Call: <a href="tel:647-535-6992">647-535-6992</a></h2>
+                     </div>
+                     </div>
+            </div>
+        </div>
+       
+        <div class="banner_bg_sct">
+            <div id="Homebanner" runat="server">
+                <div class="banner_section">
+                    <div class="slider-wrapper theme-default">
+                        <div id="slider" class="nivoSlider">
+                            <asp:Literal ID="ltrImgsf" runat="server"></asp:Literal>
+                        </div>
+                    </div>
+                </div>
+                <script type="text/javascript">
+                    $(window).on('load', function () {
+                        $('#slider').nivoSlider();
+                    });
+                </script>
+            </div>
+        </div>
+
+        <div class="container" id="containerdiv">
+            <%--<div class="front_srch_bar">
+                <div class="In_bgg">
+                    <uc:SearchBar ID="SearchBar" runat="server" />
+                </div>
+            </div>--%>
+            <asp:ContentPlaceHolder ID="MainContent" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+        <div class="top_register_section">
+            <div class="container">
+                 <div class="row frnt_line_cls">
+                <div class="col-md-2 col-sm-2">
+                    </div>
+                <div class="col-md-8 col-sm-8">
+                    <div class="register_search">
+                        <h2>Search <br />All Toronto Condos</h2>
+                       <asp:TextBox ID="txtCountry" CssClass="form-control" placeholder="Search by Address, Condo Name or MLS #" runat="server"></asp:TextBox>
+
+                    </div>
+                    <div class="register-btn">
+                         <a href="/Search.aspx?PropertyType=Condo" class="font-sale-btn">BUY A CONDO</a>
+                            <a href="/Sell.aspx" class="font-sale-btn">SELL MY CONDO</a>
+                          <a href="/Search.aspx?PropertyType=Condo&IsLease=Lease" class="font-sale-btn">RENT A CONDO</a>
+                    </div>
+                    <div class="total_records">
+                          <asp:Label ID="lblTotalRecords" runat="server"></asp:Label>
+                    </div>
+                </div>
+                 <div class="col-md-2 col-sm-2">
+                    </div>
+            </div>
+                </div>
+        </div>
+       <div class="main_sct_bg">
+        <div class="container">
+            <div class="main_sction">
+                <div class="row frnt_line_cls">
+                     <div class="col-md-2 col-sm-2">
+					 </div>
+                    <div class="col-md-8 col-sm-8">
+                      <div class="box_sct_bg">
+                          <iframe id="frame1" scrolling="auto" runat="server" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                        </div>
+                    </div>
+					  <div class="col-md-2 col-sm-2">
+					 </div>
+            </div>
+            <div >
+                </div>
+  
+                </div>
+        </div>
+    </div>
+         <div class="latst_srch_bg">
+            <div class="container">
+                <div class="main_sction2">
+                    <div class="row frnt_line_cls">
+                        <div class="col-md-12 col-sm-12">
+                            <div class="featurd_heading">
+                                <h2>Featured Condos</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row frnt_line_cls">
+                        <div class="featured_sction">
+
+                                <asp:Repeater ID="rptCondos" runat="server">
+                                    <ItemTemplate>
+                                       <div class="col-md-4">
+									   <div class="featured_box">
+									   <a href="PropertyDetails.aspx?MLSID=<%#Eval("MLS")  %>&PropertyType=IDXImagesCondo">
+                                            <img src='<%#Eval("pImage")  %>' />
+                                        </a>
+                                            <h3><%#Eval("Address")  %></h3>
+                                            <h2>$<%#Eval("listprice")  %></h2>
+                                            <h5><%#Eval("Municipality")  %></h5>
+										</div>
+										</div>
+
+                                    </ItemTemplate>
+                                </asp:Repeater>
+
+
+                           
+                        </div>
+                    </div>
+                    <div class="row frnt_line_cls">
+                        <div class="col-md-4 col-sm-4"></div>
+                        <div class="col-md-4 col-sm-4">
+                            <div class="more_listings">
+                                <a href="/Search.aspx?PropertyType=Condo" class="font-sale-btn2">Click here for more Listings</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-4"></div>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <section class="area-sec">
+	<div class="container">
+		<div class="row frnt_line_cls">
+			<div class="col-sm-6">
+				<h1 class="big-text"> Find condos in your favourite area</h1>
+			</div>
+						<div class="col-sm-6">
+				<ul class="area-list list-unstyled">
+					<li>
+						<a href="Search.aspx?Municipality=toronto &PropertyType=Condo">Toronto</a>
+					</li>
+					<li>
+						<a href="Search.aspx?Municipality=mississauga &PropertyType=Condo">Mississauga</a>
+					</li>
+					<li>
+						<a href="Search.aspx?Municipality=brampton &PropertyType=Condo">Brampton</a>
+					</li>
+					<li>
+						<a href="Search.aspx?Municipality=kitchener &PropertyType=Condoe">Kitchener</a>
+					</li>
+					<li>
+						<a href="Search.aspx?Municipality=waterloo &PropertyType=Condo">Waterloo</a>
+					</li>
+					<li>
+						<a href="Search.aspx?Municipality=vaughan &PropertyType=Condo">Vaughan</a>
+					</li>
+					<li>
+						<a href="Search.aspx?Municipality=richmond hill &PropertyType=Condo">Richmond Hill</a>
+					</li>
+					<li>
+						<a href="Search.aspx?Municipality=cambridge &PropertyType=Condo">Cambridge</a>
+					</li>
+                    <li>
+						<a href="Search.aspx?Municipality=caledon &PropertyType=Condo">Caledon</a>
+					</li>
+                    <li>
+						<a href="Search.aspx?Municipality=orangeville &PropertyType=Condo">Orangeville</a>
+					</li>
+					
+				</ul>
+			</div>
+					</div>
+	</div>
+</section>
+
+        <div class="main_sct_bg_new">
+            <div class="container">
+                <div class="main_sction">
+                    <div class="row frnt_line_cls">
+                        <div class="col-md-4 col-sm-4">
+                            <div class="left_services_bg">
+                                <div class="services_box">
+                                    <div class="col-md-8 col-sm-8">
+                                        <div class="srvce_box_cntent">
+                                            <h2><a href="Calculators.aspx">Calculators</a></h2>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <div class="srvce_box_imgg">
+                                            <img src="images/calculator.png" alt="" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="services_box">
+                                    <div class="col-md-8 col-sm-8">
+                                        <div class="srvce_box_cntent">
+                                            <h2><a href="Lease.aspx">Lease</a></h2>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <div class="srvce_box_imgg">
+                                            <img src="images/open_house.png" alt="" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="services_box">
+                                    <div class="col-md-8 col-sm-8">
+                                        <div class="srvce_box_cntent">
+                                            <h2><a href="view_testimonials.aspx">Testimonials</a></h2>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <div class="srvce_box_imgg">
+                                            <img src="images/blog.png" alt="" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-md-4">
+                            <div class="aboutMe_bg">
+                                <div class="aboutMe">
+                                    <h1>About us</h1>
+                                    <p>I believe every client has the right to be treated fairly, honestly and with integrity. My aim is to educate and prepare my clients to insure that they are always in a position to make informed decisions.Every engagement is an opportunity to create a lasting impression and a forever client.Earning trust is paramount. </p>
+                                    <div class="aboutme_butn">
+                                        <a href="about.aspx">read more...</a>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="col-md-4 col-sm-4">
+                            <div class="right_services_bg">
+                                <div class="services_box_right">
+                                    <div class="col-md-4 col-sm-4">
+                                        <div class="srvce_box_imgg_r">
+                                            <img src="images/home_staging.png" alt="" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 col-sm-8">
+                                        <div class="srvce_box_cntent_r">
+                                            <h2><a href="virtualtour.aspx">Virtual Tour</a></h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="services_box_right">
+                                    <div class="col-md-4 col-sm-4">
+                                        <div class="srvce_box_imgg_r">
+                                            <img src="images/pre_listing_inspection.png" alt="" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 col-sm-8">
+                                        <div class="srvce_box_cntent_r">
+                                            <h2><a href="mylistings.aspx">Exclusive listings</a></h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="services_box_right">
+                                    <div class="col-md-4 col-sm-4">
+                                        <div class="srvce_box_imgg_r">
+                                            <img src="images/bank.png" alt="" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 col-sm-8">
+                                        <div class="srvce_box_cntent_r">
+                                            <h2><a href="BankSale.aspx">Bank Sale</a></h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="construct_sct_bg">
+            <div class="container">
+                <div class="main_sction2">
+                    <div class="row frnt_line_cls">
+                        <div class="col-md-12 col-sm-12">
+                            <div class="featurd_heading">
+                                <h2>Pre-Constructions</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row frnt_line_cls">
+                        <div class="featured_sction">
+
+
+                            <ul id="flexiselDemo3">
+                                <asp:Repeater ID="rptImages" runat="server">
+                                    <ItemTemplate>
+                                        <li><a href="DreamHouseDetail.aspx?ID=<%#Eval("Id")  %>">
+                                            <img src='/admin/uploadfiles/<%#Eval("ImageUrl")  %>' />
+                                            <h3><%#Eval("Title")  %></h3>
+                                        </a></li>
+
+                                    </ItemTemplate>
+                                </asp:Repeater>
+
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="fuuter_bg" id="one-footer">
+            <div class="container">
+                <div class="futer_sctnn">
+                    <div class="col-md-12 col-sm-12">
+                        <div class="futer_mennu">
+                            <ul>
+                                <li><a href="../view_testimonials.aspx">Testimonials</a></li>
+                                <li><a href="../PrivacyPolicy.aspx">Privacy Policy</a></li>
+                                <li><a href="../ContactUs.aspx">Contact us</a></li>
+                                <li><a href="../admin/adminlogin.aspx">Login</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="futer_bg">
+             <div class="container">
+            <div class="col-md-6 col-sm-6">
+                <div class="futer_loggo">
+                       <h5><b>Email:</b> pdhirrealty@gmail.com</h5>
+                </div>
+            </div>
+             <div class="col-md-6 col-sm-6">
+                <div class="futer_loggo">
+                       <h5><b>Call:</b> (647) 535-6992</h5>
+                </div>
+            </div>
+                 </div>
+        </div>
+        <div class="col-md-12 col-sm-12">
+            <div class="Designed_and_Developed">
+                <div>
+                    <b>Designed & Developed by <a href="http://only4agents.com/">Only4Agents</a>
+                    </b>
+                </div>
+            </div>
+        </div>
+        <div class="fuutr_phne_bg">
+            <div class="futer_mail_bg">
+                <div class="futer_mail">
+                    <ul>
+                        <li><a href="mailto:pdhirrealty@gmail.com">
+                            <img alt="" src="images/mail_icnnn.png" /></a></li>
+                        <li><a href="tel:647-535-6992">
+                            <img alt="" src="images/mbl_icnnn.png" /></a></li>
+                        <li><a href="sms:647-535-6992">
+                            <img alt="" src="images/sms.png" /></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+
+</html>
+<link href="css/style.css" rel="stylesheet" />
+<link href="css/nivo-slider.css" rel="stylesheet" />
+<link href="css/shortcodes.css" rel="stylesheet" />
+<link href="css/jquery.bxslider.css" rel="stylesheet" />
+<%--   <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>--%>
+<script type="text/javascript" src="js/jquery.flexisel.js"></script>
+<script type="text/javascript" src="js/jquery.nivo.slider.js"></script>
+<script type="text/javascript" src="js/jquery_009.js"></script>
+<script type="text/javascript" src="js/shortcodes.js"></script>
+<script type="text/javascript">
+
+    $(window).on('load', function () {
+        $("#flexiselDemo1").flexisel();
+        $("#flexiselDemo2").flexisel({
+            enableResponsiveBreakpoints: true,
+            responsiveBreakpoints: {
+                portrait: {
+                    changePoint: 480,
+                    visibleItems: 1
+                },
+                landscape: {
+                    changePoint: 640,
+                    visibleItems: 2
+                },
+                tablet: {
+                    changePoint: 768,
+                    visibleItems: 3
+                }
+            }
+        });
+
+        $("#flexiselDemo3").flexisel({
+            visibleItems: 5,
+            animationSpeed: 800,
+            autoPlay: true,
+            autoPlaySpeed: 4000,
+            pauseOnHover: true,
+            enableResponsiveBreakpoints: true,
+            responsiveBreakpoints: {
+                portrait: {
+                    changePoint: 480,
+                    visibleItems: 1
+                },
+                landscape: {
+                    changePoint: 640,
+                    visibleItems: 2
+                },
+                tablet: {
+                    changePoint: 768,
+                    visibleItems: 3
+                }
+            }
+        });
+
+        $("#flexiselDemo4").flexisel({
+            clone: false
+        });
+
+    });
+</script>
